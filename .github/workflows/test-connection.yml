@@ -1,1 +1,49 @@
 name: Test AWS Connection
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  test-aws-connection:
+    name: Test AWS Connection
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Test AWS CLI
+        run: |
+          echo "Ì¥ç Testing AWS CLI connection..."
+          aws --version
+          aws sts get-caller-identity
+          aws configure get region
+      
+      - name: Test ECS Access
+        run: |
+          echo " Testing ECS access..."
+          aws ecs list-clusters --region ${{ secrets.AWS_REGION }}
+      
+      - name: Test ECR Access
+        run: |
+          echo " Testing ECR access..."
+          aws ecr describe-repositories --region ${{ secrets.AWS_REGION }}
+      
+      - name: Test S3 Access
+        run: |
+          echo "Ì≥¶ Testing S3 access..."
+          aws s3 ls --region ${{ secrets.AWS_REGION }}
+      
+      - name: Connection Test Results
+        run: |
+          echo "‚úÖ AWS connection test completed successfully!"
+          echo "Ìºç Region: ${{ secrets.AWS_REGION }}"
+          echo "Ì¥ë Access Key: ${{ secrets.AWS_ACCESS_KEY_ID }}
